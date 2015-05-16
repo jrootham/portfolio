@@ -1,0 +1,27 @@
+#background
+{
+    width:              90vh;
+    height:             90vh;
+    border:             solid black 1px;
+}
+
+#thing
+{
+    width:              5vh;
+    height:             5vh;
+    background-color:   #0000FF;
+    display:            none;
+}
+
+#top
+{
+    width:              100%;
+    height:             33%;
+}
+
+#middle
+{
+    width:              100%;
+    height:             33%;
+    background-color:   #FF0000;
+}
