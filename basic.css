@@ -1,8 +1,73 @@
-@media (max-width: 300px){
+@media screen and (min-width: 1000px)
+{
+    #container
+    {
+        display: flex;
+    }
 
+    #nav
+    {
+        background-color: #88c5ff;
+        width: 20vw;
+    }
+
+    .buffer
+    {
+        height: 4vw;
+    }
+
+    .link
+    {
+        margin: 2vw;
+        font-size: 2vw;
+    }
+
+    #main
+    {
+        width:77vw;
+    }
+}
+
+@media screen and (max-width: 1000px)
+{
+    #nav
+    {
+        background-color: #88c5ff;
+        display: flex;
+    }
+
+    .buffer
+    {
+        width: 10vw;
+    }
+
+    .link
+    {
+        margin: 2vw;
+        width: 10vw;
+        font-size: 3vw;
+    }
+
+    #main
+    {
+    }
+}
+
+#title
+{
+    font-size:          15vw;
+    height:             20vw;
+    padding-top:        2vw;
+    background-color:   #7578ff;
+    text-align:         center;
 }
 
 #main div
 {
     margin:         1em;
+}
+
+h1
+{
+    text-align: center;
 }
