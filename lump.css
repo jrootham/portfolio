@@ -1,0 +1,20 @@
+h1
+{
+    text-align: center;
+}
+
+#container
+{
+    height: 70vw;
+    position: relative;
+    border: solid black 1px;
+}
+
+#lump
+{
+    position: absolute;
+    top: 30vw;
+    width: 0;
+    height: 0;
+    background-color: #FF0000;
+}
