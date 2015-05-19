@@ -1,0 +1,19 @@
+h1
+{
+    width: 99.9%;
+    text-align: center;
+}
+
+#container
+{
+    width: 99.9%;
+    height: 85vh;
+    border: solid 1px black;
+}
+
+.dust
+{
+    width: 2px;
+    height: 2px;
+    background-color: black;
+}
