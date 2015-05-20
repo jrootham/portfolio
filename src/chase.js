@@ -11,14 +11,42 @@
     $ = require('jquery');
     var React = require('react');
 
-    var SIZE = 2;
+    var SIZE = 4;
     var RATE = 200;
     var INTERVAL = 20;
+    var XCOUNT = 15;
+    var YCOUNT = 10;
 
-    var box;
+    var target = undefined;
 
     function computeSpeed (target, position, acceleration) {
-        return (target - position) * acceleration;
+        var delta = target - position;
+
+        if (Math.abs(delta) < .25) {
+            delta = 0;
+        }
+
+        var speed = delta * acceleration;
+
+        if (speed > 0) {
+            speed = Math.max(speed, 1);
+        }
+
+        if (speed < 0) {
+            speed = Math.min(speed, -1);
+        }
+
+        return speed;
+    }
+
+    function limit(limit, position, speed) {
+        var next = position + speed;
+
+        if (next < 0 || next > limit) {
+            speed = -speed;
+        }
+
+        return speed;
     }
 
     var Dust = React.createClass({
@@ -37,6 +65,41 @@
             this.setState(openingState);
         },
 
+        componentWillReceiveProps: function() {
+            var position = this.state.position;
+            var speed = this.state.speed;
+
+            if (this.props.target){
+                var target = this.props.target;
+                var acceleration = this.props.acceleration;
+
+                speed = {
+                    x: computeSpeed(target.x, position.x, acceleration.x),
+                    y: computeSpeed(target.y, position.y, acceleration.y)
+                }
+
+                this.setState({speed:speed});
+            }
+
+
+            var xLimit = $('#container').width();
+            var yLimit = $('#container').height();
+
+            speed.x = limit(xLimit, position.x, speed.x);
+            speed.y = limit(yLimit, position.y, speed.y);
+
+            this.setState({speed:speed});
+
+            var newPosition = {
+                position: {
+                    x : position.x + speed.x,
+                    y : position.y + speed.y
+                }
+            }
+            this.setState(newPosition);
+
+        },
+
         render: function() {
             var position = this.state.position;
 
@@ -52,28 +115,6 @@
             return (
                 <div style={style}></div>
             )
-        },
-
-        componentWillUpdate: function() {
-            var position = this.state.position;
-            if (this.state.target){
-                var target = this.state.target;
-                var speed = {
-                    x: computeSpeed(target.x, position.x, this.props.accleration.x),
-                    y: computeSpeed(target.y, position.y, this.props.accleration.y)
-                }
-
-                this.setState({speed:speed});
-            }
-
-            var newPosition = {
-                position: {
-                    x : position.x + this.state.speed.x,
-                    y : position.y + this.state.speed.y
-                }
-            }
-            this.setState(newPosition);
-
         }
 
     })
@@ -81,6 +122,8 @@
     var Box = React.createClass({
         render: function() {
             var propList = makePropList();
+
+            var target = this.props.target;
 
             var style = {
                 width:      '100%',
@@ -95,29 +138,25 @@
                                 return (<Dust
                                         position={currentValue.position}
                                         acceleration={currentValue.acceleration}
+                                        target={target}
                                     />)
                             }
                         )
                     }
                 </div>
             )
-        },
-
-        componentWillUpdate: function () {
-            React.Children.forEach(function (child){
-                child.setState({target:this.state.target});
-            })
         }
     })
 
     function makePropList() {
-        var spacing = $('#container').width() / 10;
+        var spaceX = $('#container').width() / XCOUNT;
+        var spaceY = $('#container').height() / YCOUNT;
 
         var list = [];
 
-        for (var i = 1 ; i < 10 ; i+= 1) {
-            for (var j = 1 ; j < 10 ; j+= 1) {
-                var pos = {x: i * spacing, y: j * spacing};
+        for (var i = 1 ; i < XCOUNT ; i+= 1) {
+            for (var j = 1 ; j < YCOUNT ; j+= 1) {
+                var pos = {x: i * spaceX, y: j * spaceY};
                 var acceleration = {x : i / RATE, y: j / RATE}
                 list.push({position:pos, acceleration: acceleration});
             }
@@ -126,12 +165,36 @@
         return list;
     }
 
+    function startTarget(event) {
+        setTarget(event);
+        $('#container').mousemove(setTarget);
+    }
+
+    function endTarget(event) {
+        clearTarget(event);
+        $('#container').off('mousemove');
+    }
+
+    function setTarget(event) {
+        var location = $('#container').position();
+        target = {x:event.clientX - location.left, y:event.clientY - location.top};
+    }
+
+    function clearTarget(event) {
+        target = undefined;
+    }
+
+    function box() {
+        React.render(<Box target = {target} />, document.getElementById("container"));
+    }
+
     function launch() {
-        box = <Box />
-        React.render(box, document.getElementById("container"));
+        $('#container')
+            .mousedown(startTarget)
+            .mouseup(endTarget)
+            .mouseleave(endTarget);
 
-        box.setState({target:{x:10, y:10}});
-
+        setInterval(box, INTERVAL);
     }
 
     window.onload = launch;
