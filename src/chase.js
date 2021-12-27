@@ -116,7 +116,6 @@
                 <div style={style}></div>
             )
         }
-
     })
 
     var Box = React.createClass({
